@@ -20,7 +20,7 @@ class ItemTable(Table):
     status = Col('Status')
 
 #TODO - rename this class
-class Item(object):
+class TableRow(object):
     def __init__(self, name, time, status):
         self.route_name = name
         self.departure_time = time
@@ -49,7 +49,7 @@ def hello_world():
             route_name = item["relationships"]["route"]["data"]["id"]
             route_departure_time = convert_timestamp_to_ampm(route_departure_time)
             route_status = item["attributes"]["status"]
-            route = Item(route_name, route_departure_time, route_status)
+            route = TableRow(route_name, route_departure_time, route_status)
             items.append(route)
 
     # fill in the rest of the table with scheduled routes
@@ -63,7 +63,7 @@ def hello_world():
         route_name = item["relationships"]["route"]["data"]["id"]
         route_status = "Scheduled"
         route_departure_time = convert_timestamp_to_ampm(item["attributes"]["departure_time"])
-        route = Item(route_name, route_departure_time, route_status)
+        route = TableRow(route_name, route_departure_time, route_status)
         items.append(route)
 
     table = ItemTable(items)

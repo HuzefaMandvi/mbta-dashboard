@@ -1,0 +1,12 @@
+body {
+    font-family: Sans-Serif;
+}
+
+table {
+    width: 100%;
+    font-family: Sans-Serif;
+}
+
+tr:nth-child(2n) {
+    background: rgba(0, 0, 0, 0.192);
+}

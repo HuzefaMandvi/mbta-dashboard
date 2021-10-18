@@ -1,5 +1,5 @@
 from datetime import date, datetime
-from flask import Flask
+from flask import Flask, render_template
 from flask_table import Table, Col
 import requests
 
@@ -47,7 +47,7 @@ def hello_world():
         if route_departure_time is not None:
             item_counter += 1
             id = item["relationships"]["trip"]["data"]["id"]
-            route_name = item["relationships"]["route"]["data"]["id"]
+            route_name = item["relationships"]["route"]["data"]["id"][3:]
             route_departure_time = convert_timestamp_to_ampm(route_departure_time)
             route_status = item["attributes"]["status"]
             route = TableRow(route_name, route_departure_time, route_status, id)
@@ -65,12 +65,11 @@ def hello_world():
         id = item["relationships"]["trip"]["data"]["id"]
         if any(route.id == id for route in routes):
             continue
-        route_name = item["relationships"]["route"]["data"]["id"]
+        route_name = item["relationships"]["route"]["data"]["id"][3:]
         route_status = "Scheduled"
         route_departure_time = convert_timestamp_to_ampm(item["attributes"]["departure_time"])
         route = TableRow(route_name, route_departure_time, route_status, id)
         routes.append(route)
 
-    header = "<h1>North Station Departure Board</h1>"
     table = ItemTable(routes)
-    return header + table.__html__()
+    return render_template('index.html', table=table)

@@ -1,4 +1,5 @@
 from datetime import date, datetime
+from pytz import timezone
 from flask import Flask, render_template
 from flask_table import Table, Col
 import requests
@@ -57,7 +58,8 @@ def hello_world():
     r = requests.get(url=api_url_schedule, params=params_schedule)
     data = r.json()
     # get current hour in HH:MM form in order to bound our schedule request
-    now = datetime.now()
+    eastern = timezone('US/Eastern')
+    now = datetime.now(eastern)
     current_time = now.strftime("%H:%M")
     params_schedule["filter[min_time]"] = current_time
     for item in data["data"][item_counter:9]:

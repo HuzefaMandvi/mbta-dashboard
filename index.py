@@ -20,7 +20,7 @@ class ItemTable(Table):
     departure_time = Col('Departure')
     status = Col('Status')
 
-#TODO - rename this class
+
 class TableRow(object):
     def __init__(self, name, time, status, id):
         self.route_name = name
@@ -37,7 +37,7 @@ def convert_timestamp_to_ampm(timestring):
 
 @app.route("/")
 def hello_world():
-    items = []
+    routes = []
     item_counter = 0
 
     # first, try to get 10 live predictions
@@ -53,7 +53,7 @@ def hello_world():
             route_departure_time = convert_timestamp_to_ampm(route_departure_time)
             route_status = item["attributes"]["status"]
             route = TableRow(route_name, route_departure_time, route_status, id)
-            items.append(route)
+            routes.append(route)
 
     # fill in the rest of the table with scheduled routes
     r = requests.get(url=api_url_schedule, params=params_schedule)
@@ -65,13 +65,13 @@ def hello_world():
     for item in data["data"][item_counter:9]:
         #first, check if we already have a prediction for this trip
         id = item["relationships"]["trip"]["data"]["id"]
-        if any(x.id == id for x in items):
+        if any(route.id == id for route in routes):
             continue
         route_name = item["relationships"]["route"]["data"]["id"]
         route_status = "Scheduled"
         route_departure_time = convert_timestamp_to_ampm(item["attributes"]["departure_time"])
         route = TableRow(route_name, route_departure_time, route_status, id)
-        items.append(route)
+        routes.append(route)
 
-    table = ItemTable(items)
+    table = ItemTable(routes)
     return table.__html__()

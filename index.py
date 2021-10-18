@@ -9,7 +9,6 @@ app = Flask(__name__)
 api_url_base = "https://api-v3.mbta.com"
 api_url_predictions = api_url_base + "/predictions"
 api_url_schedule = api_url_base + "/schedules"
-#TODO - sort by departure time and ignore all entries without a departure time
 params_predictions = {'filter[stop]':'place-north', 'filter[route_type]':'2', 'direction_id':'0', 'sort':'-departure_time'}
 params_schedule = {'filter[stop]':'place-north', 'filter[route_type]':'2', 'direction_id':'0', 'sort':'departure_time'}
 

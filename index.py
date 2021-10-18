@@ -22,10 +22,11 @@ class ItemTable(Table):
 
 #TODO - rename this class
 class TableRow(object):
-    def __init__(self, name, time, status):
+    def __init__(self, name, time, status, id):
         self.route_name = name
         self.departure_time = time
         self.status = status
+        self.id = id
 
 def convert_timestamp_to_ampm(timestring):
     # get rid of UTC offset
@@ -47,10 +48,11 @@ def hello_world():
         # if there is no departure time listed on a prediction, it is not valid
         if route_departure_time is not None:
             item_counter += 1
+            id = item["relationships"]["trip"]["data"]["id"]
             route_name = item["relationships"]["route"]["data"]["id"]
             route_departure_time = convert_timestamp_to_ampm(route_departure_time)
             route_status = item["attributes"]["status"]
-            route = TableRow(route_name, route_departure_time, route_status)
+            route = TableRow(route_name, route_departure_time, route_status, id)
             items.append(route)
 
     # fill in the rest of the table with scheduled routes
@@ -61,10 +63,14 @@ def hello_world():
     current_time = now.strftime("%H:%M")
     params_schedule["filter[min_time]"] = current_time
     for item in data["data"][item_counter:9]:
+        #first, check if we already have a prediction for this trip
+        id = item["relationships"]["trip"]["data"]["id"]
+        if any(x.id == id for x in items):
+            continue
         route_name = item["relationships"]["route"]["data"]["id"]
         route_status = "Scheduled"
         route_departure_time = convert_timestamp_to_ampm(item["attributes"]["departure_time"])
-        route = TableRow(route_name, route_departure_time, route_status)
+        route = TableRow(route_name, route_departure_time, route_status, id)
         items.append(route)
 
     table = ItemTable(items)
